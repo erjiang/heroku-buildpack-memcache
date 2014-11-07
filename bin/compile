@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+# fail fast
+set -e
+
+# debug
+# set -x
+
+# parse and derive params
+BUILD_DIR=$1
+CACHE_DIR=$2
+LP_DIR=`cd $(dirname $0); cd ..; pwd`
+
+function error() {
+  echo " !     $*" >&2
+  exit 1
+}
+
+function topic() {
+  echo "-----> $*"
+}
+
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+
+mkdir "$BUILD_DIR"/memcached-build
+cd "$BUILD_DIR"/memcached-build
+
+topic "Downloading memcache..."
+wget -O memcached.tar.gz http://memcached.org/latest
+
+topic "Extracting..."
+tar -xzf memcached.tar.gz | indent
+cd memcached-1.*
+
+topic "Configuring..."
+./configure
+
+topic "Building..."
+make -j3
+
+topic "Done building memcache"
+mv memcached "$BUILD_DIR"/memcached
+cd "$BUILD_DIR"  # leave before we clean up
+rm -r "$BUILD_DIR"/memcached-build
