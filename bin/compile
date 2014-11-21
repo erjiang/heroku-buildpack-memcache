@@ -34,7 +34,7 @@ mkdir "$BUILD_DIR"/memcached-build
 cd "$BUILD_DIR"/memcached-build
 
 topic "Downloading memcache..."
-wget -O memcached.tar.gz http://memcached.org/latest
+curl -o memcached.tar.gz -L http://memcached.org/latest
 
 topic "Extracting..."
 tar -xzf memcached.tar.gz | indent
